@@ -135,7 +135,7 @@ DoRegistration(typename ParserType::Pointer & parser)
       for( unsigned int n = 0; n < isDerivedInitialMovingTransform.size(); n++ )
         {
         std::stringstream curFileName;
-        curFileName << outputPrefix << n << "DerivedInitialMovingTranslation.mat";
+        curFileName << outputPrefix << n << "DerivedInitialMovingTranslation.xfm";
 
         typename RegistrationHelperType::CompositeTransformType::TransformTypePointer curTransform =
           compositeTransform->GetNthTransform( n );
@@ -164,7 +164,7 @@ DoRegistration(typename ParserType::Pointer & parser)
       for( unsigned int n = 0; n < isDerivedInitialFixedTransform.size(); n++ )
         {
         std::stringstream curFileName;
-        curFileName << outputPrefix << n << "DerivedInitialFixedTranslation.mat";
+        curFileName << outputPrefix << n << "DerivedInitialFixedTranslation.xfm";
 
         typename RegistrationHelperType::CompositeTransformType::TransformTypePointer curTransform =
           compositeTransform->GetNthTransform( n );
@@ -933,8 +933,8 @@ DoRegistration(typename ParserType::Pointer & parser)
 
   if( parser->Convert<bool>( compositeOutputOption->GetFunction( 0 )->GetName() ) )
     {
-    std::string compositeTransformFileName = outputPrefix + std::string( "Composite.h5" );
-    std::string inverseCompositeTransformFileName = outputPrefix + std::string( "InverseComposite.h5" );
+    std::string compositeTransformFileName = outputPrefix + std::string( "Composite.xfm" );
+    std::string inverseCompositeTransformFileName = outputPrefix + std::string( "InverseComposite.xfm" );
 
     typename RegistrationHelperType::CompositeTransformType::TransformTypePointer compositeTransform =
       resultTransform.GetPointer();

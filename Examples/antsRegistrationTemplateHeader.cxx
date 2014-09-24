@@ -36,20 +36,20 @@ RegTypeToFileName(const std::string & type, bool & writeInverse, bool & writeVel
 
   if( str == "rigid" )
     {
-    return "Rigid.mat";
+    return "Rigid.xfm";
     }
   else if( str == "affine" ||
            str == "compositeaffine" || str == "compaff" )
     {
-    return "Affine.mat";
+    return "Affine.xfm";
     }
   else if( str == "similarity" )
     {
-    return "Similarity.mat";
+    return "Similarity.xfm";
     }
   else if( str == "translation" )
     {
-    return "Translation.mat";
+    return "Translation.xfm";
     }
   else if( str == "bspline" ||
            str == "ffd" )
@@ -58,7 +58,7 @@ RegTypeToFileName(const std::string & type, bool & writeInverse, bool & writeVel
     }
   else if( str == "genericaffine" )
     {
-    return "GenericAffine.mat";
+    return "GenericAffine.xfm";
     }
   else if( str == "gaussiandisplacementfield" ||
            str == "gdf" ||
@@ -75,7 +75,7 @@ RegTypeToFileName(const std::string & type, bool & writeInverse, bool & writeVel
            str == "exponential" ||
            str == "bsplineexponential" )
     {
-    return "Warp.nii.gz";
+    return "Warp_grid_0.mnc";
     }
   return "BOGUS.XXXX";
 }
