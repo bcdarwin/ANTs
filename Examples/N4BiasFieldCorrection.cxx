@@ -38,12 +38,12 @@ protected:
   };
 public:
 
-  void Execute(itk::Object *caller, const itk::EventObject & event)
+  void Execute(itk::Object *caller, const itk::EventObject & event) ITK_OVERRIDE
   {
     Execute( (const itk::Object *) caller, event);
   }
 
-  void Execute(const itk::Object * object, const itk::EventObject & event)
+  void Execute(const itk::Object * object, const itk::EventObject & event) ITK_OVERRIDE
   {
     const TFilter * filter =
       dynamic_cast<const TFilter *>( object );
@@ -74,10 +74,10 @@ int N4( itk::ants::CommandLineParser *parser )
   typedef float RealType;
 
   typedef itk::Image<RealType, ImageDimension> ImageType;
-  typename ImageType::Pointer inputImage = NULL;
+  typename ImageType::Pointer inputImage = ITK_NULLPTR;
 
   typedef itk::Image<RealType, ImageDimension> MaskImageType;
-  typename MaskImageType::Pointer maskImage = NULL;
+  typename MaskImageType::Pointer maskImage = ITK_NULLPTR;
 
   typedef itk::N4BiasFieldCorrectionImageFilter<ImageType, MaskImageType,
                                                 ImageType> CorrecterType;
@@ -102,6 +102,8 @@ int N4( itk::ants::CommandLineParser *parser )
    * handle the mask image
    */
 
+  bool isMaskImageSpecified = false;
+
   typename itk::ants::CommandLineParser::OptionType::Pointer maskImageOption =
     parser->GetOption( "mask-image" );
   if( maskImageOption && maskImageOption->GetNumberOfFunctions() )
@@ -110,6 +112,8 @@ int N4( itk::ants::CommandLineParser *parser )
     ReadImage<MaskImageType>( maskImage, inputFile.c_str() );
     maskImage->Update();
     maskImage->DisconnectPipeline();
+
+    isMaskImageSpecified = true;
     }
   if( !maskImage )
     {
@@ -127,7 +131,7 @@ int N4( itk::ants::CommandLineParser *parser )
     maskImage->DisconnectPipeline();
     }
 
-  typename ImageType::Pointer weightImage = NULL;
+  typename ImageType::Pointer weightImage = ITK_NULLPTR;
 
   typename itk::ants::CommandLineParser::OptionType::Pointer weightImageOption =
     parser->GetOption( "weight-image" );
@@ -432,8 +436,8 @@ int N4( itk::ants::CommandLineParser *parser )
 
     typename itk::ants::CommandLineParser::OptionType::Pointer rescaleOption =
       parser->GetOption( "rescale-intensities" );
-    if( rescaleOption && rescaleOption->GetNumberOfFunctions() &&
-      ! parser->Convert<bool>( rescaleOption->GetFunction()->GetName() ) )
+    if( ! isMaskImageSpecified || ( rescaleOption && rescaleOption->GetNumberOfFunctions() &&
+      ! parser->Convert<bool>( rescaleOption->GetFunction()->GetName() ) ) )
       {
       doRescale = false;
       }
@@ -577,7 +581,7 @@ void N4InitializeCommandLineOptions( itk::ants::CommandLineParser *parser )
       + std::string( "new intensity range to be within certain values.  The " )
       + std::string( "result is that the range can \"drift\" from the original " )
       + std::string( "at each iteration.  This option rescales to the [min,max] " )
-      + std::string( "range of the original image intensities within the mask." );
+      + std::string( "range of the original image intensities within the user-specified mask." );
 
     OptionType::Pointer option = OptionType::New();
     option->SetLongName( "rescale-intensities" );
@@ -729,7 +733,7 @@ int N4BiasFieldCorrection( std::vector<std::string> args, std::ostream* /*out_st
     // place the null character in the end
     argv[i][args[i].length()] = '\0';
     }
-  argv[argc] = 0;
+  argv[argc] = ITK_NULLPTR;
   // class to automatically cleanup argv upon destruction
   class Cleanup_argv
   {
@@ -777,7 +781,10 @@ private:
   parser->SetCommandDescription( commandDescription );
   N4InitializeCommandLineOptions( parser );
 
-  parser->Parse( argc, argv );
+  if( parser->Parse( argc, argv ) == EXIT_FAILURE )
+    {
+    return EXIT_FAILURE;
+    }
 
   if( argc == 1 )
     {
